@@ -4,101 +4,135 @@ import 'package:flutter/material.dart';
 import 'package:simple_loginpage/screens/welcome_in.dart';
 import 'package:simple_loginpage/screens/welcome_up.dart';
 import 'package:simple_loginpage/widgets/widget.dart';
+import 'dart:async';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: MyApp(),
+    home: HomePage(),
   ));
 }
 
-class MyApp extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _HomePageState extends State<HomePage> {
+  bool darkTheme = false;
   String _email, _password;
   final auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBarMain(context),
-      body: Column(
-        children: [
-          SizedBox(height: 16.0),
-          Text("SignUp"),
-          TextField(
-            decoration: textInputDecoration("Email"),
-            keyboardType: TextInputType.emailAddress,
-            onChanged: (value) {
-              setState(() {
-                _email = value.trim();
-              });
-            },
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: appBarMain(context),
+        body: Column(
+          children: [
+            SizedBox(height: 16.0),
+            Text("SignUp"),
+            TextField(
+              decoration: textInputDecoration("Email"),
+              keyboardType: TextInputType.emailAddress,
+              onChanged: (value) {
+                setState(() {
+                  _email = value.trim();
+                });
+              },
+            ),
+            SizedBox(
+              height: 8.0,
+            ),
+            TextField(
+              decoration: textInputDecoration("Password"),
+              keyboardType: TextInputType.visiblePassword,
+              onChanged: (value) {
+                setState(() {
+                  _password = value.trim();
+                });
+              },
+            ),
+            SizedBox(
+              height: 8.0,
+            ),
+            RaisedButton(
+                child: Text("Sign Up"),
+                onPressed: () {
+                  auth.createUserWithEmailAndPassword(
+                      email: _email, password: _password);
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => WelcomeUp()));
+                }),
+            Text("Sign In"),
+            SizedBox(
+              height: 8.0,
+            ),
+            TextField(
+              decoration: textInputDecoration("Email"),
+              keyboardType: TextInputType.emailAddress,
+              onChanged: (value) {
+                setState(() {
+                  _email = value.trim();
+                });
+              },
+            ),
+            SizedBox(
+              height: 8.0,
+            ),
+            TextField(
+              decoration: textInputDecoration("Password"),
+              onChanged: (value) {
+                setState(() {
+                  _password = value.trim();
+                });
+              },
+            ),
+            SizedBox(
+              height: 8.0,
+            ),
+            RaisedButton(
+                child: Text("Sign In"),
+                onPressed: () {
+                  auth.signInWithEmailAndPassword(
+                      email: _email, password: _password);
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => WelcomeIn()));
+                }),
+            SizedBox(
+              height: 8.0,
+            ),
+          ],
+        ),
+        drawer: Drawer(
+          child: ListView(
+            children: <Widget>[
+              ListTile(
+                title: Text("Dark Theme"),
+                trailing: Switch(
+                  value: darkTheme,
+                  onChanged: (changed) {
+                    setState(() {
+                      darkTheme = changed;
+                    });
+                  },
+                ),
+              )
+            ],
           ),
-          SizedBox(
-            height: 8.0,
-          ),
-          TextField(
-            decoration: textInputDecoration("Password"),
-            keyboardType: TextInputType.visiblePassword,
-            onChanged: (value) {
-              setState(() {
-                _password = value.trim();
-              });
-            },
-          ),
-          SizedBox(
-            height: 8.0,
-          ),
-          RaisedButton(
-              child: Text("Sign Up"),
-              onPressed: () {
-                auth.createUserWithEmailAndPassword(
-                    email: _email, password: _password);
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => WelcomeUp()));
-              }),
-          Text("Sign In"),
-          SizedBox(
-            height: 8.0,
-          ),
-          TextField(
-            decoration: textInputDecoration("Email"),
-            keyboardType: TextInputType.emailAddress,
-            onChanged: (value) {
-              setState(() {
-                _email = value.trim();
-              });
-            },
-          ),
-          SizedBox(
-            height: 8.0,
-          ),
-          TextField(
-            decoration: textInputDecoration("Password"),
-            onChanged: (value) {
-              setState(() {
-                _password = value.trim();
-              });
-            },
-          ),
-          SizedBox(
-            height: 8.0,
-          ),
-          RaisedButton(
-              child: Text("Sign In"),
-              onPressed: () {
-                auth.signInWithEmailAndPassword(
-                    email: _email, password: _password);
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => WelcomeIn()));
-              }),
-        ],
+        ),
       ),
+       theme: darkTheme ? ThemeData.dark() : ThemeData.light(),
     );
   }
 }
+
+class Bloc {
+  // ignore: close_sinks
+  final _themeController = StreamController<bool>();
+  get changeTheme => _themeController.sink.add;
+  get darkThemeEnabled => _themeController.stream;
+}
+
+final bloc = Bloc();

@@ -19,7 +19,7 @@ class _WelcomeUpState extends State<WelcomeUp> {
             child: Text("Log Out"),
             onPressed: (){
               auth.signOut();
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>MyApp()));
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>HomePage()));
             },
           )
         ],
