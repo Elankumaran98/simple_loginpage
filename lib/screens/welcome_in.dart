@@ -8,14 +8,13 @@ class WelcomeIn extends StatefulWidget {
 }
 
 class _WelcomeInState extends State<WelcomeIn> {
-  String _username;
   final auth=FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Row(
         children: [
-          Text("Welcome Back" +_username),
+          Text("Welcome Back"),
           FlatButton(
             child: Text("Log Out"),
             onPressed: (){
